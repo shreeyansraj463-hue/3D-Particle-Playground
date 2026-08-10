@@ -1,138 +1,60 @@
-🚀 Kinematic Engine v2.0
-
-A Real-Time Physics Playground for Advanced Projectile Simulation
 
 ---
 
-🌌 What is this?
+### 2. 3D Particle Playground README
+*This one is designed to look like a serious academic research project. It uses mathematical formatting, clean spacing, and expandable theory sections.*
 
-Ever wondered what happens when you remove textbook simplifications and simulate motion the way it actually behaves in the real world?
+```markdown
+<div align="center">
 
-Kinematic Engine v2.0 is a browser-based physics simulation that lets you explore projectile motion under realistic forces like air resistance, spin, planetary gravity, and even Earth’s rotation.
+# 🌌 Orbital Mechanics Sandbox
 
-👉 This isn’t just a simulation — it’s a mini physics lab in your browser.
+[![Deployment](https://img.shields.io/badge/Deployment-Live-brightgreen.svg?style=for-the-badge)](https://shreeyansraj463-hue.github.io/3D-Particle-Playground/)
+[![Engine](https://img.shields.io/badge/Physics_Engine-Custom_Kinematics-ff5722.svg?style=for-the-badge)](#)
+[![Three.js](https://img.shields.io/badge/Rendered_with-Three.js-000000.svg?style=for-the-badge&logo=threedotjs&logoColor=white)](#)
 
----
+> *Translating classical physical laws and orbital kinematics into real-time, browser-based computational models.*
 
-⚡ Why it’s different
-
-Most physics problems assume:
-
-- No air resistance
-- Constant gravity
-- Flat Earth
-- No rotation
-
-This engine breaks those assumptions.
-
-✔ Simulates non-conservative forces
-✔ Supports multiple planets (Earth, Mars, Moon, Venus)
-✔ Models drag, Magnus effect, and Coriolis force
-✔ Runs in real-time at 60 FPS
+</div>
 
 ---
 
-🧠 How it works
+## 🔭 Abstract
 
-Instead of using simple formulas, the engine solves motion step-by-step using numerical computation:
+This repository contains an interactive computational physics sandbox built using WebGL and **Three.js**. Rather than relying on pre-built physics engines (like Cannon.js or Matter.js), the gravitational attraction and vector updates are mathematically resolved frame-by-frame from scratch.
 
-[
-\Delta t = 0.02s
-]
+## 📐 Theoretical Framework
 
-At every frame, it updates:
+<details>
+<summary><b>View Mathematical Formulation</b></summary>
+<br>
 
-- Position → "(x, y, z)"
-- Velocity → "(vx, vy, vz)"
-- Time → "t"
+The simulation models the gravitational attraction between a central massive body and a system of massless particles. The force $F$ exerted on a particle is derived from Newton's law of universal gravitation:
 
-This creates a continuous, realistic trajectory rather than an idealized parabola.
+$$ F = G \frac{m_1 m_2}{r^2} $$
 
----
+For computational efficiency in a real-time rendering loop, the engine applies a normalized gravitational constant. The resulting acceleration vector is applied directly to each particle's velocity matrix per animation frame:
 
-🌍 Physics Behind the Engine
+$$ a = \frac{G}{r^2} $$
 
-🌏 Gravity (Variable with Altitude)
+**Orbital Initialization:**
+To prevent particles from immediately collapsing into the central mass, they are initialized with a calculated tangential velocity. The velocity vector is perpendicular to their position vector, naturally resulting in sustained elliptical orbits.
 
-[
-g(y) = \frac{GM}{(R+y)^2}
-]
+</details>
 
----
+## ⚙️ Technical Implementation
 
-🌬️ Air Resistance (Drag)
+- **Rendering Pipeline:** Three.js / WebGL.
+- **Data Structures:** Utilizes `Float32Array` within a `BufferGeometry` object. This ensures memory-efficient handling of hundreds of particles compared to standard JavaScript arrays.
+- **Physics Loop:** Custom Euler integration updating positional and velocity vectors synchronously with the display refresh rate via `requestAnimationFrame`.
 
-[
-\mathbf{F}_d = \frac{1}{2}\rho v^2 C_d A \hat{\mathbf{v}}
-]
+## 🚀 Usage & Interaction
 
----
-
-🌀 Magnus Effect (Spin Physics)
-
-[
-\mathbf{F}m = \rho (\boldsymbol{\omega} \times \mathbf{v}) V{\text{eff}}
-]
+1. Navigate to the [Live Deployment](https://shreeyansraj463-hue.github.io/3D-Particle-Playground/).
+2. **Interact:** Click and drag to rotate the 3D spatial camera.
+3. Observe the orbital planes across the X, Y, and Z axes in real-time.
 
 ---
-
-🌪️ Coriolis Effect (Planetary Rotation)
-
-[
-a_z = -2\Omega \left(v_x \sin\lambda - v_y \cos\lambda\right)
-]
-
----
-
-🛠️ Tech Stack
-
-- ⚙️ Core Engine: Vanilla JavaScript (ES6+)
-- 🎨 Rendering: HTML5 Canvas
-- ⚡ Performance: Optimized with "requestAnimationFrame"
-- 🧮 Computation: Euler Numerical Integration
-
----
-
-🎛️ What You Can Control
-
-- 🌍 Planet (Earth, Mars, Moon, Venus)
-- 🚀 Launch velocity & angle
-- ⚖️ Mass of projectile
-- 📏 Radius (size)
-- 🌀 Spin (Magnus effect)
-- 🌐 Latitude (Coriolis effect)
-
----
-
-🎯 Why this project matters
-
-This project bridges the gap between:
-
-«📘 Textbook physics → 💻 Real-world simulation»
-
-It helps you see physics in action, not just solve equations.
-
----
-
-👨‍💻 About
-
-Built as an exploration into physics + computation.
-Currently focused on JEE preparation, this project was created out of curiosity to experiment with simulation and real-time systems.
-
----
-
-⭐ Try it yourself
-
-👉 Interact. Experiment. Break the rules of ideal physics.
-
----
-
-💡 Fun Thought
-
-Try this:
-
-- Add backspin → watch the projectile stay in air longer
-- Switch to Moon → see how far it travels
-- Increase radius → observe drag killing velocity
-
-Physics becomes way more interesting when you play with it.
+<div align="center">
+  <i>Developed for experimental physics visualization.</i>
+</div>
