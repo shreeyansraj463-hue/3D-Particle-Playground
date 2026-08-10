@@ -15,7 +15,11 @@ const outTime = document.getElementById('out-time');
 const g = 9.81;
 let animationId;
 
-// Resize Canvas
+// Theme Colors
+const colorAccent = "#ff5722";
+const colorGrid = "#1f232b";
+const colorAxes = "#3a4150";
+
 function resizeCanvas() {
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientHeight;
@@ -23,89 +27,95 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// Update UI labels dynamically
 velInput.addEventListener('input', () => velVal.innerText = velInput.value);
 angInput.addEventListener('input', () => angVal.innerText = angInput.value);
 
-// Draw Background Grid
 function drawGrid() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    
+    // Grid Lines
+    ctx.strokeStyle = colorGrid;
     ctx.lineWidth = 1;
-
-    for (let x = 0; x < canvas.width; x += 40) {
+    for (let x = 0; x < canvas.width; x += 50) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
     }
-    for (let y = 0; y < canvas.height; y += 40) {
+    for (let y = 0; y < canvas.height; y += 50) {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
     }
 
-    // Draw origin axes
-    ctx.strokeStyle = "rgba(0, 240, 255, 0.3)";
+    // Axes
+    ctx.strokeStyle = colorAxes;
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(20, 0); ctx.lineTo(20, canvas.height); ctx.stroke(); // Y axis
-    ctx.beginPath(); ctx.moveTo(0, canvas.height - 20); ctx.lineTo(canvas.width, canvas.height - 20); ctx.stroke(); // X axis
+    ctx.beginPath(); ctx.moveTo(30, 0); ctx.lineTo(30, canvas.height); ctx.stroke(); // Y axis
+    ctx.beginPath(); ctx.moveTo(0, canvas.height - 30); ctx.lineTo(canvas.width, canvas.height - 30); ctx.stroke(); // X axis
 }
 
-// Run Simulation
 function simulate() {
     cancelAnimationFrame(animationId);
     drawGrid();
 
-    // Get Inputs
+    // Inputs
     const u = parseFloat(velInput.value);
-    const theta = parseFloat(angInput.value) * (Math.PI / 180); // Convert to radians
+    const theta = parseFloat(angInput.value) * (Math.PI / 180);
 
     // Kinematic Equations
     const tFlight = (2 * u * Math.sin(theta)) / g;
     const hMax = (Math.pow(u, 2) * Math.pow(Math.sin(theta), 2)) / (2 * g);
     const range = (Math.pow(u, 2) * Math.sin(2 * theta)) / g;
 
-    // Update UI Metrics
+    // Update UI
     outTime.innerText = tFlight.toFixed(2) + " s";
     outHeight.innerText = hMax.toFixed(2) + " m";
     outRange.innerText = range.toFixed(2) + " m";
 
-    // Animation Variables
+    // Animation variables
     let t = 0;
-    const dt = 0.05; // Time step for animation
+    const dt = 0.05; 
     
-    // Scale drawing to fit canvas (Pixels per meter)
-    const scaleX = (canvas.width - 60) / range;
-    const scaleY = (canvas.height - 60) / (hMax > 0 ? hMax : 1);
-    const scale = Math.min(scaleX, scaleY); // Keep aspect ratio consistent
+    // Scale drawing to fit canvas perfectly
+    const scaleX = (canvas.width - 80) / range;
+    const scaleY = (canvas.height - 80) / (hMax > 0 ? hMax : 1);
+    const scale = Math.min(scaleX, scaleY); 
 
-    const originX = 20;
-    const originY = canvas.height - 20;
+    const originX = 30;
+    const originY = canvas.height - 30;
 
     ctx.beginPath();
     ctx.moveTo(originX, originY);
-    ctx.strokeStyle = "#00f0ff";
-    ctx.lineWidth = 3;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#00f0ff";
+    ctx.strokeStyle = colorAccent;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    
+    // Remove shadow for cleaner engineering look
+    ctx.shadowBlur = 0;
 
     function drawTrajectory() {
         if (t <= tFlight) {
-            // Equations of motion (x and y over time)
             const x = u * Math.cos(theta) * t;
             const y = (u * Math.sin(theta) * t) - (0.5 * g * Math.pow(t, 2));
 
-            // Map physical coordinates to canvas pixels
             const drawX = originX + (x * scale);
             const drawY = originY - (y * scale);
 
             ctx.lineTo(drawX, drawY);
             ctx.stroke();
 
-            // Draw glowing particle tip
-            ctx.fillStyle = "#fff";
+            // Draw leading particle
+            ctx.fillStyle = "#ffffff";
             ctx.beginPath();
-            ctx.arc(drawX, drawY, 4, 0, Math.PI * 2);
+            ctx.arc(drawX, drawY, 5, 0, Math.PI * 2);
             ctx.fill();
 
             t += dt;
             animationId = requestAnimationFrame(drawTrajectory);
+        } else {
+            // Draw exact landing point
+            const finalX = originX + (range * scale);
+            ctx.fillStyle = colorAccent;
+            ctx.beginPath();
+            ctx.arc(finalX, originY, 6, 0, Math.PI * 2);
+            ctx.fill();
         }
     }
     
@@ -113,6 +123,4 @@ function simulate() {
 }
 
 launchBtn.addEventListener('click', simulate);
-
-// Initialize
 resizeCanvas();
