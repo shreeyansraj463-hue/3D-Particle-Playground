@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbital Mechanics Sandbox</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: sans-serif; color: white; }
+        #canvas-container { width: 100vw; height: 100vh; }
+        .overlay { position: absolute; top: 20px; left: 20px; pointer-events: none; }
+        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
+        p { font-size: 0.8rem; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>N-BODY ORBITAL SIMULATION</h1>
+        <p>Calculating gravitational vectors in real-time.</p>
+    </div>
+    <div id="canvas-container"></div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
