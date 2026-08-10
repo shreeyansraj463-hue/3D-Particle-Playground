@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinematic Engine | Physics Lab</title>
+    <title>Kinematic Engine | Advanced Physics Lab</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
-        <!-- Header -->
         <header>
             <div class="header-content">
                 <h1>KINEMATIC_ENGINE</h1>
-                <p>v1.0.0 // PROJECTILE MOTION CALCULATOR</p>
+                <p>v2.0 // NUMERICAL INTEGRATION & NON-CONSERVATIVE FORCES</p>
             </div>
             <div class="header-badge">LIVE LAB</div>
         </header>
@@ -21,24 +20,51 @@
         <div class="dashboard">
             <!-- Control Panel -->
             <div class="panel controls-panel">
-                <div class="panel-header">INPUT PARAMETERS</div>
+                <div class="panel-header">ENVIRONMENT & LAUNCH PARAMETERS</div>
                 
-                <div class="input-group">
-                    <label for="velocity">Initial Velocity (u) <span class="val-display"><span id="vel-val">50</span> m/s</span></label>
-                    <input type="range" id="velocity" min="10" max="100" value="50">
+                <div class="input-grid">
+                    <div class="input-group full-width">
+                        <label for="planet">Planetary Environment</label>
+                        <select id="planet">
+                            <option value="earth">Earth (Standard Gravity & Drag)</option>
+                            <option value="moon">Moon (Low Gravity, Vacuum)</option>
+                            <option value="mars">Mars (Medium Gravity, Thin Atmosphere)</option>
+                            <option value="venus">Venus (Heavy Gravity, Dense Atmosphere)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Velocity: <span class="val-display"><span id="vel-val">150</span> m/s</span></label>
+                        <input type="range" id="velocity" min="10" max="500" value="150">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Angle (θ): <span class="val-display"><span id="ang-val">45</span>°</span></label>
+                        <input type="range" id="angle" min="1" max="89" value="45">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mass: <span class="val-display"><span id="mass-val">5</span> kg</span></label>
+                        <input type="range" id="mass" min="0.1" max="50" step="0.1" value="5">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Radius: <span class="val-display"><span id="rad-val">0.1</span> m</span></label>
+                        <input type="range" id="radius" min="0.01" max="1" step="0.01" value="0.1">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Backspin: <span class="val-display"><span id="spin-val">0</span> RPM</span></label>
+                        <input type="range" id="spin" min="-2000" max="2000" step="100" value="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Latitude: <span class="val-display"><span id="lat-val">0</span>°</span></label>
+                        <input type="range" id="latitude" min="-90" max="90" value="0">
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="angle">Launch Angle (θ) <span class="val-display"><span id="ang-val">45</span>°</span></label>
-                    <input type="range" id="angle" min="1" max="89" value="45">
-                </div>
-
-                <div class="input-group static-group">
-                    <label>Gravity Constant (g)</label>
-                    <div class="static-val">9.81 m/s²</div>
-                </div>
-
-                <button id="launch-btn">RUN SIMULATION</button>
+                <button id="launch-btn">EXECUTE NUMERICAL INTEGRATION</button>
             </div>
 
             <!-- Metrics Panel -->
@@ -50,12 +76,14 @@
                         <span class="metric-title">MAX HEIGHT (H)</span>
                         <span class="metric-value" id="out-height">0.00 m</span>
                     </div>
-                    
                     <div class="metric-box">
-                        <span class="metric-title">TOTAL RANGE (R)</span>
+                        <span class="metric-title">FORWARD RANGE (X)</span>
                         <span class="metric-value" id="out-range">0.00 m</span>
                     </div>
-                    
+                    <div class="metric-box">
+                        <span class="metric-title">LATERAL DRIFT (Z) <span style="font-size: 0.6rem;">[CORIOLIS]</span></span>
+                        <span class="metric-value" id="out-drift">0.00 m</span>
+                    </div>
                     <div class="metric-box">
                         <span class="metric-title">TIME OF FLIGHT (T)</span>
                         <span class="metric-value" id="out-time">0.00 s</span>
@@ -66,11 +94,17 @@
 
         <!-- Simulation Canvas -->
         <div class="panel canvas-panel">
-            <div class="panel-header">TRAJECTORY VISUALIZATION</div>
+            <div class="panel-header">LIVE TRAJECTORY (SIDE VIEW) + CORIOLIS DRIFT RADAR</div>
             <div class="canvas-container">
                 <canvas id="sim-canvas"></canvas>
-                <div class="axis-label y-axis">y (m)</div>
-                <div class="axis-label x-axis">x (m)</div>
+                <div class="axis-label y-axis">Altitude (y)</div>
+                <div class="axis-label x-axis">Distance (x)</div>
+                <!-- Dynamic Vector Legend -->
+                <div class="legend">
+                    <div class="legend-item"><span class="color-box" style="background:#ff5722;"></span> Path</div>
+                    <div class="legend-item"><span class="color-box" style="background:#00f0ff;"></span> Vx (Drag)</div>
+                    <div class="legend-item"><span class="color-box" style="background:#ff0055;"></span> Vy (Gravity)</div>
+                </div>
             </div>
         </div>
     </div>
