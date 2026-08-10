@@ -1,93 +1,118 @@
-import * as THREE from 'https://unpkg.com/three@0.126.0/build/three.module.js';
+const canvas = document.getElementById('sim-canvas');
+const ctx = canvas.getContext('2d');
 
-// Scene Setup
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('canvas-container').appendChild(renderer.domElement);
+const velInput = document.getElementById('velocity');
+const angInput = document.getElementById('angle');
+const velVal = document.getElementById('vel-val');
+const angVal = document.getElementById('ang-val');
+const launchBtn = document.getElementById('launch-btn');
 
-camera.position.z = 50;
-camera.position.y = 20;
-camera.lookAt(0, 0, 0);
+const outHeight = document.getElementById('out-height');
+const outRange = document.getElementById('out-range');
+const outTime = document.getElementById('out-time');
 
-// Central Mass (The "Sun")
-const coreGeo = new THREE.SphereGeometry(2, 32, 32);
-const coreMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
-const centralMass = new THREE.Mesh(coreGeo, coreMat);
-scene.add(centralMass);
+// Physics Constants
+const g = 9.81;
+let animationId;
 
-// Particle System (The "Planets/Asteroids")
-const particleCount = 500;
-const particlesGeo = new THREE.BufferGeometry();
-const posArray = new Float32Array(particleCount * 3);
-const velocities = [];
-
-const gravityConstant = 0.5;
-
-for (let i = 0; i < particleCount * 3; i += 3) {
-    // Random position in a disc
-    const radius = 10 + Math.random() * 30;
-    const theta = Math.random() * Math.PI * 2;
-    
-    posArray[i] = Math.cos(theta) * radius;     // x
-    posArray[i+1] = (Math.random() - 0.5) * 2;  // y (slight variance)
-    posArray[i+2] = Math.sin(theta) * radius;   // z
-
-    // Calculate tangential velocity for orbit
-    const orbitalSpeed = Math.sqrt(gravityConstant / radius) * 15; 
-    velocities.push({
-        x: -Math.sin(theta) * orbitalSpeed,
-        y: 0,
-        z: Math.cos(theta) * orbitalSpeed
-    });
+// Resize Canvas
+function resizeCanvas() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    drawGrid();
 }
+window.addEventListener('resize', resizeCanvas);
 
-particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-const particleMat = new THREE.PointsMaterial({ size: 0.2, color: 0x00f0ff });
-const particleSystem = new THREE.Points(particlesGeo, particleMat);
-scene.add(particleSystem);
+// Update UI labels dynamically
+velInput.addEventListener('input', () => velVal.innerText = velInput.value);
+angInput.addEventListener('input', () => angVal.innerText = angInput.value);
 
-// Physics Animation Loop
-function animate() {
-    requestAnimationFrame(animate);
+// Draw Background Grid
+function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    ctx.lineWidth = 1;
 
-    const positions = particleSystem.geometry.attributes.position.array;
-
-    for (let i = 0; i < particleCount; i++) {
-        const i3 = i * 3;
-        const x = positions[i3];
-        const y = positions[i3+1];
-        const z = positions[i3+2];
-
-        // Vector math for gravity
-        const distanceSq = x*x + y*y + z*z;
-        const distance = Math.sqrt(distanceSq);
-        
-        // F = G * (m1*m2)/r^2. Simplified acceleration: a = G / r^2
-        const force = gravityConstant / distanceSq;
-
-        // Apply force towards center (0,0,0)
-        velocities[i].x -= (x / distance) * force;
-        velocities[i].y -= (y / distance) * force;
-        velocities[i].z -= (z / distance) * force;
-
-        // Update positions based on velocity
-        positions[i3] += velocities[i].x;
-        positions[i3+1] += velocities[i].y;
-        positions[i3+2] += velocities[i].z;
+    for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
     }
 
-    particleSystem.geometry.attributes.position.needsUpdate = true;
-    particleSystem.rotation.y += 0.001; // Slow global rotation
-    
-    renderer.render(scene, camera);
+    // Draw origin axes
+    ctx.strokeStyle = "rgba(0, 240, 255, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(20, 0); ctx.lineTo(20, canvas.height); ctx.stroke(); // Y axis
+    ctx.beginPath(); ctx.moveTo(0, canvas.height - 20); ctx.lineTo(canvas.width, canvas.height - 20); ctx.stroke(); // X axis
 }
 
-animate();
+// Run Simulation
+function simulate() {
+    cancelAnimationFrame(animationId);
+    drawGrid();
 
-window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-});
+    // Get Inputs
+    const u = parseFloat(velInput.value);
+    const theta = parseFloat(angInput.value) * (Math.PI / 180); // Convert to radians
+
+    // Kinematic Equations
+    const tFlight = (2 * u * Math.sin(theta)) / g;
+    const hMax = (Math.pow(u, 2) * Math.pow(Math.sin(theta), 2)) / (2 * g);
+    const range = (Math.pow(u, 2) * Math.sin(2 * theta)) / g;
+
+    // Update UI Metrics
+    outTime.innerText = tFlight.toFixed(2) + " s";
+    outHeight.innerText = hMax.toFixed(2) + " m";
+    outRange.innerText = range.toFixed(2) + " m";
+
+    // Animation Variables
+    let t = 0;
+    const dt = 0.05; // Time step for animation
+    
+    // Scale drawing to fit canvas (Pixels per meter)
+    const scaleX = (canvas.width - 60) / range;
+    const scaleY = (canvas.height - 60) / (hMax > 0 ? hMax : 1);
+    const scale = Math.min(scaleX, scaleY); // Keep aspect ratio consistent
+
+    const originX = 20;
+    const originY = canvas.height - 20;
+
+    ctx.beginPath();
+    ctx.moveTo(originX, originY);
+    ctx.strokeStyle = "#00f0ff";
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#00f0ff";
+
+    function drawTrajectory() {
+        if (t <= tFlight) {
+            // Equations of motion (x and y over time)
+            const x = u * Math.cos(theta) * t;
+            const y = (u * Math.sin(theta) * t) - (0.5 * g * Math.pow(t, 2));
+
+            // Map physical coordinates to canvas pixels
+            const drawX = originX + (x * scale);
+            const drawY = originY - (y * scale);
+
+            ctx.lineTo(drawX, drawY);
+            ctx.stroke();
+
+            // Draw glowing particle tip
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(drawX, drawY, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            t += dt;
+            animationId = requestAnimationFrame(drawTrajectory);
+        }
+    }
+    
+    drawTrajectory();
+}
+
+launchBtn.addEventListener('click', simulate);
+
+// Initialize
+resizeCanvas();
