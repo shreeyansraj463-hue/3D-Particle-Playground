@@ -3,66 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinetic | Projectile Motion Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <title>Kinematic Engine | Physics Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
         <!-- Header -->
         <header>
-            <h1>KINETIC // <span class="highlight">PHYSICS ENGINE</span></h1>
-            <p>Real-time Projectile Motion & Kinematics Calculator</p>
+            <div class="header-content">
+                <h1>KINEMATIC_ENGINE</h1>
+                <p>v1.0.0 // PROJECTILE MOTION CALCULATOR</p>
+            </div>
+            <div class="header-badge">LIVE LAB</div>
         </header>
 
         <div class="dashboard">
             <!-- Control Panel -->
             <div class="panel controls-panel">
-                <h2>LAUNCH PARAMETERS</h2>
+                <div class="panel-header">INPUT PARAMETERS</div>
                 
                 <div class="input-group">
-                    <label for="velocity">Initial Velocity (u) : <span id="vel-val">50</span> m/s</label>
+                    <label for="velocity">Initial Velocity (u) <span class="val-display"><span id="vel-val">50</span> m/s</span></label>
                     <input type="range" id="velocity" min="10" max="100" value="50">
                 </div>
 
                 <div class="input-group">
-                    <label for="angle">Launch Angle (θ) : <span id="ang-val">45</span>°</label>
+                    <label for="angle">Launch Angle (θ) <span class="val-display"><span id="ang-val">45</span>°</span></label>
                     <input type="range" id="angle" min="1" max="89" value="45">
                 </div>
 
-                <div class="input-group">
-                    <label for="gravity">Gravity (g) : 9.81 m/s²</label>
+                <div class="input-group static-group">
+                    <label>Gravity Constant (g)</label>
+                    <div class="static-val">9.81 m/s²</div>
                 </div>
 
-                <button id="launch-btn">SIMULATE TRAJECTORY</button>
+                <button id="launch-btn">RUN SIMULATION</button>
             </div>
 
             <!-- Metrics Panel -->
             <div class="panel metrics-panel">
-                <h2>CALCULATED METRICS</h2>
+                <div class="panel-header">OUTPUT METRICS</div>
                 
-                <div class="metric-box">
-                    <span class="metric-title">Max Height (H)</span>
-                    <span class="metric-value" id="out-height">-- m</span>
-                </div>
-                
-                <div class="metric-box">
-                    <span class="metric-title">Total Range (R)</span>
-                    <span class="metric-value" id="out-range">-- m</span>
-                </div>
-                
-                <div class="metric-box">
-                    <span class="metric-title">Time of Flight (T)</span>
-                    <span class="metric-value" id="out-time">-- s</span>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <span class="metric-title">MAX HEIGHT (H)</span>
+                        <span class="metric-value" id="out-height">0.00 m</span>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <span class="metric-title">TOTAL RANGE (R)</span>
+                        <span class="metric-value" id="out-range">0.00 m</span>
+                    </div>
+                    
+                    <div class="metric-box">
+                        <span class="metric-title">TIME OF FLIGHT (T)</span>
+                        <span class="metric-value" id="out-time">0.00 s</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Simulation Canvas -->
-        <div class="canvas-container">
-            <canvas id="sim-canvas"></canvas>
-            <div class="axis-label y-axis">Height (y)</div>
-            <div class="axis-label x-axis">Distance (x)</div>
+        <div class="panel canvas-panel">
+            <div class="panel-header">TRAJECTORY VISUALIZATION</div>
+            <div class="canvas-container">
+                <canvas id="sim-canvas"></canvas>
+                <div class="axis-label y-axis">y (m)</div>
+                <div class="axis-label x-axis">x (m)</div>
+            </div>
         </div>
     </div>
 
