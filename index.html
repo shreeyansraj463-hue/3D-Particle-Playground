@@ -3,22 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orbital Mechanics Sandbox</title>
-    <style>
-        body { margin: 0; overflow: hidden; background-color: #000; font-family: sans-serif; color: white; }
-        #canvas-container { width: 100vw; height: 100vh; }
-        .overlay { position: absolute; top: 20px; left: 20px; pointer-events: none; }
-        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
-        p { font-size: 0.8rem; opacity: 0.7; }
-    </style>
+    <title>Kinetic | Projectile Motion Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="overlay">
-        <h1>N-BODY ORBITAL SIMULATION</h1>
-        <p>Calculating gravitational vectors in real-time.</p>
-    </div>
-    <div id="canvas-container"></div>
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header>
+            <h1>KINETIC // <span class="highlight">PHYSICS ENGINE</span></h1>
+            <p>Real-time Projectile Motion & Kinematics Calculator</p>
+        </header>
 
-    <script type="module" src="script.js"></script>
+        <div class="dashboard">
+            <!-- Control Panel -->
+            <div class="panel controls-panel">
+                <h2>LAUNCH PARAMETERS</h2>
+                
+                <div class="input-group">
+                    <label for="velocity">Initial Velocity (u) : <span id="vel-val">50</span> m/s</label>
+                    <input type="range" id="velocity" min="10" max="100" value="50">
+                </div>
+
+                <div class="input-group">
+                    <label for="angle">Launch Angle (θ) : <span id="ang-val">45</span>°</label>
+                    <input type="range" id="angle" min="1" max="89" value="45">
+                </div>
+
+                <div class="input-group">
+                    <label for="gravity">Gravity (g) : 9.81 m/s²</label>
+                </div>
+
+                <button id="launch-btn">SIMULATE TRAJECTORY</button>
+            </div>
+
+            <!-- Metrics Panel -->
+            <div class="panel metrics-panel">
+                <h2>CALCULATED METRICS</h2>
+                
+                <div class="metric-box">
+                    <span class="metric-title">Max Height (H)</span>
+                    <span class="metric-value" id="out-height">-- m</span>
+                </div>
+                
+                <div class="metric-box">
+                    <span class="metric-title">Total Range (R)</span>
+                    <span class="metric-value" id="out-range">-- m</span>
+                </div>
+                
+                <div class="metric-box">
+                    <span class="metric-title">Time of Flight (T)</span>
+                    <span class="metric-value" id="out-time">-- s</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Canvas -->
+        <div class="canvas-container">
+            <canvas id="sim-canvas"></canvas>
+            <div class="axis-label y-axis">Height (y)</div>
+            <div class="axis-label x-axis">Distance (x)</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
